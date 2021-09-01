@@ -1,0 +1,1 @@
+# ade-community-example-external-api
