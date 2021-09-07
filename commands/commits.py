@@ -2,8 +2,9 @@ import click
 from utils import util
 
 @click.group()
-def commits():
-    pass
+@click.pass_context
+def commits(ctx):
+    ctx.obj['BASE_URL'] = f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/commits"
 
 
 @commits.command()
@@ -11,9 +12,8 @@ def commits():
 @click.option('--id', required=True, type=int)
 def get(ctx, id):
     s = ctx.obj['SESSION']
-    request_url = ctx.obj['EXTERNAL_API_URL'] + "/deployment/v1/commits/" + str(id)
-    response = s.get(request_url)
-    util.handleResponse(response, ctx.obj['FILE_WRITE'])
+    response = s.get(f"{ctx.obj['BASE_URL']}/{id}")
+    util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
     return response
 
 
@@ -22,7 +22,6 @@ def get(ctx, id):
 @click.option('--id', required=True, type=int)
 def content(ctx, id):
     s = ctx.obj['SESSION']
-    request_url = ctx.obj['EXTERNAL_API_URL'] + "/deployment/v1/commits/" + str(id) + "/content"
-    response = s.get(request_url)
-    util.handleResponse(response, ctx.obj['FILE_WRITE'])
+    response = s.get(f"{ctx.obj['BASE_URL']}/{id}/content")
+    util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
     return response

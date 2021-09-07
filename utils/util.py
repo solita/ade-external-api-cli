@@ -2,14 +2,14 @@ import json
 import click
 from uuid import UUID
 
-def handleResponse(response, file_write):
+def handleResponse(content, file_write):
     if file_write: 
-        f = open("responses/last_response.json", "w")
-        click.echo(prettyJson(response.text), file=f)
+        f = open(f"responses/{file_write}", "w")
+        click.echo(prettyJson(content), file=f)
         click.echo(f"Response written to file: {f.name}")
         f.close()
     else: 
-        click.echo(prettyJson(response.text))
+        click.echo(prettyJson(content))
 
 def prettyJson(text):
     return json.dumps(json.loads(text), indent=4)

@@ -1,10 +1,10 @@
-import json
 import click
 from utils import util
 
 @click.group()
-def environments():
-    pass
+@click.pass_context
+def environments(ctx):
+    ctx.obj['BASE_URL'] = f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/environments"
 
 
 @environments.command()
@@ -12,9 +12,9 @@ def environments():
 @click.option('--environment-name', required=True)
 def get(ctx, environment_name):
     s = ctx.obj['SESSION']
-    request_url = ctx.obj['EXTERNAL_API_URL'] + "/deployment/v1/environments/" + environment_name
+    request_url = f"{ctx.obj['BASE_URL']}/{environment_name}"
     response = s.get(request_url)
-    util.handleResponse(response, ctx.obj['FILE_WRITE'])
+    util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
     return response
 
 
@@ -23,9 +23,9 @@ def get(ctx, environment_name):
 @click.option('--environment-name', required=True)
 def instances(ctx, environment_name):
     s = ctx.obj['SESSION']
-    request_url = ctx.obj['EXTERNAL_API_URL'] + "/deployment/v1/environments/" + environment_name + "/instances"
+    request_url = f"{ctx.obj['BASE_URL']}/{environment_name}/instances"
     response = s.get(request_url)
-    util.handleResponse(response, ctx.obj['FILE_WRITE'])
+    util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
     return response
 
 
@@ -35,9 +35,9 @@ def instances(ctx, environment_name):
 @click.option('--instance-id', required=True, type=click.UUID)
 def instance(ctx, environment_name, instance_id):
     s = ctx.obj['SESSION']
-    request_url = ctx.obj['EXTERNAL_API_URL'] + "/deployment/v1/environments/" + environment_name + "/instances/" + str(instance_id)
+    request_url = f"{ctx.obj['BASE_URL']}/{environment_name}/instances/{instance_id}"
     response = s.get(request_url)
-    util.handleResponse(response, ctx.obj['FILE_WRITE'])
+    util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
     return response
 
 @environments.command()
@@ -46,7 +46,7 @@ def instance(ctx, environment_name, instance_id):
 @click.option('--instance-id', required=True, type=click.UUID)
 def deploy(ctx, environment_name, instance_id):
     s = ctx.obj['SESSION']
-    request_url = ctx.obj['EXTERNAL_API_URL'] + "/deployment/v1/environments/" + environment_name + "/instances/" + str(instance_id) + "/deployments"
+    request_url = f"{ctx.obj['BASE_URL']}/{environment_name}/instances/{instance_id}/deployments"
     response = s.post(request_url)
-    util.handleResponse(response, ctx.obj['FILE_WRITE'])
+    util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
     return response

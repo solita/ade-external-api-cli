@@ -1,10 +1,10 @@
-import json
 import click
 from utils import util
 
 @click.group()
-def deployments():
-    pass
+@click.pass_context
+def deployments(ctx):
+    ctx.obj['BASE_URL'] = f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/deployments"
 
 
 @deployments.command()
@@ -12,9 +12,8 @@ def deployments():
 @click.option('--id', required=True, type=click.UUID)
 def get(ctx, id):
     s = ctx.obj['SESSION']
-    request_url = ctx.obj['EXTERNAL_API_URL'] + "/deployment/v1/deployments/" + str(id)
-    response = s.get(request_url)
-    util.handleResponse(response, ctx.obj['FILE_WRITE'])
+    response = s.get(f"{ctx.obj['BASE_URL']}/{id}")
+    util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
     return response
 
 
@@ -23,7 +22,6 @@ def get(ctx, id):
 @click.option('--id', required=True, type=click.UUID)
 def phases(ctx, id):
     s = ctx.obj['SESSION']
-    request_url = ctx.obj['EXTERNAL_API_URL'] + "/deployment/v1/deployments/" + str(id) + "/phases"
-    response = s.get(request_url)
-    util.handleResponse(response, ctx.obj['FILE_WRITE'])
+    response = s.get(f"{ctx.obj['EXTERNAL_API_URL']}/{id}/phases")
+    util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
     return response
