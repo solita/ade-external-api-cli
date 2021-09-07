@@ -9,11 +9,11 @@ from commands import code
 
 
 @click.group()
-@click.option('--tenant', envvar='ADE_TENANT')
-@click.option('--installation', envvar='ADE_INSTALLATION')
-@click.option('--environment', envvar='ADE_ENVIRONMENT')
-@click.option('--apikey-id', envvar='ADE_API_KEY_ID')
-@click.option('--apikey-secret', envvar='ADE_API_KEY_SECRET')
+@click.option('--tenant', envvar='ADE_TENANT', required=True)
+@click.option('--installation', envvar='ADE_INSTALLATION', required=True)
+@click.option('--environment', envvar='ADE_ENVIRONMENT', required=True)
+@click.option('--apikey-id', envvar='ADE_API_KEY_ID', required=True)
+@click.option('--apikey-secret', envvar='ADE_API_KEY_SECRET', required=True)
 @click.option('--base-url', envvar='ADE_EXTERNAL_API_BASE_URL', default='https://external.services.saasdev.agiledataengine.com')
 @click.option('--debug', is_flag=True, default=False)
 @click.option('--file-write')
