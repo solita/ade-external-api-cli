@@ -124,7 +124,7 @@ def list_promotions(ctx, environment_name, instance_id, state, commit_id, packag
     if size: params.append(f"size={size}")
     if page: params.append(f"page={page}")
 
-    request_url = ctx.obj['BASE_URL']
+    request_url = f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/promotions"
     if len(params) != 0: request_url = f"{request_url}?" + "&".join(params)
 
     return s.get(request_url)

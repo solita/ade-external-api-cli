@@ -40,11 +40,14 @@ def instances(ctx, environment_name):
 @click.option('--environment-name', required=True)
 @click.option('--instance-id', required=True, type=click.UUID)
 def instance(ctx, environment_name, instance_id):
-    s = ctx.obj['SESSION']
-    request_url = f"{ctx.obj['BASE_URL']}/{environment_name}/instances/{instance_id}"
-    response = s.get(request_url)
-    util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
-    return response
+    response = get_instance(ctx, environment_name, instance_id)
+    if response.status_code == 200:
+        util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
+        exit(0)
+    elif response.text != None:
+        click.echo(f"{util.prettyJson(response.text)}", err=True)
+    exit(1)
+
 
 @environments.command()
 @click.pass_context
@@ -76,3 +79,7 @@ def deploy(ctx, environment_name, instance_id):
     return response
 
 
+def get_instance(ctx, environment_name, instance_id):
+    s = ctx.obj['SESSION']
+    request_url =  f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/environments/{environment_name}/instances/{instance_id}"
+    return s.get(request_url)

@@ -21,21 +21,17 @@ from commands import code
 def ade(ctx, tenant, installation, environment, apikey_id, apikey_secret, base_url, debug, file_write):
     if debug:
         http.client.HTTPConnection.debuglevel = 1
-        click.echo(f"Tenant: {tenant}")
-        click.echo(f"Installation: {installation}")
-        click.echo(f"Environment: {environment}")
-        click.echo(f"Api Key ID: {apikey_id}")
-        click.echo(f"Api Key Secret: {apikey_secret}")
-
 
     s = requests.Session()
     s.headers.update({"X-API-KEY-ID": apikey_id, "X-API-KEY-SECRET": apikey_secret, "Content-Type": "application/json"})
-
-
+    
     ctx.ensure_object(dict)
     ctx.obj['DEBUG'] = debug
     ctx.obj['SESSION'] = s
-    ctx.obj['EXTERNAL_API_URL'] = base_url + "/external-api/api/" + tenant + "/" + installation + "/" + environment
+    ctx.obj['EXTERNAL_API_URL'] = f"{base_url}/external-api/api/{tenant}/{installation}/{environment}"
+    ctx.obj['EXTERNAL_API_BASE_URL'] = base_url
+    ctx.obj['TENANT'] = tenant
+    ctx.obj['INSTALLATION'] = installation
 
     ctx.obj['FILE_WRITE'] = file_write
 
@@ -44,16 +40,3 @@ ade.add_command(commits.commits)
 ade.add_command(deployments.deployments)
 ade.add_command(environments.environments)
 ade.add_command(promotions.promotions)
-
-@ade.command()
-def test():
-    temp1 = [(1,"test1"), (2, "test2"), (6,"test4"), (7, "test5")]
-    temp2 = [(2, "test2"), (4,"test4"), (5, "test5")]    
-    # temp1_ids = [promotion["commitId"] for promotion in source_promotions]
-    # temp2_commit_ids = [promotion["commitId"] for promotion in target_promotions]
-    diff = set(temp1) ^ (set(temp1) & set(temp2))
-    diff2 = []
-    for f in diff:
-        if f[1] in [t[1] for t in temp2]: 
-            diff2.append(f[0])
-    click.echo(diff2)
