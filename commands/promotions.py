@@ -74,16 +74,25 @@ def demote(ctx, id):
 @promotions.command()
 @click.pass_context
 @click.option('--source-instance-id', required=True, type=click.UUID)
-@click.option('--target-instance-id', type=click.UUID)
-def promote_env(ctx, source_instance_id, target_instance_id):
+@click.option('--target-instance-id', required=True, type=click.UUID)
+@click.option('--all', is_flag=True, default=False)
+def promote_env(ctx, source_instance_id, target_instance_id, all):
     source_promotions = all_promotions_from_instance(ctx, source_instance_id, ['DEPLOYED'])
     target_promotions = all_promotions_from_instance(ctx, target_instance_id, ['DEPLOYED'])
-    source_commit_ids = [promotion["commitId"] for promotion in source_promotions]
-    target_commit_ids = [promotion["commitId"] for promotion in target_promotions]
+    source_commit_ids = [(promotion["commitId"], promotion["packageId"]) for promotion in source_promotions]
+    target_commit_ids = [(promotion["commitId"], promotion["packageId"]) for promotion in target_promotions]
     diff_commits = set(source_commit_ids) ^ (set(source_commit_ids) & set(target_commit_ids))
+    if not all:
+        filtered_commits = []
+        for commit in diff_commits:
+            if commit[1] in [tc[1] for tc in target_commit_ids]: 
+                filtered_commits.append(commit)
+        diff_commits = filtered_commits
 
-    for commit_id in diff_commits:
-        promote_commit(ctx, commit_id, f"Promoted from instance with id: {source_instance_id}", None, target_instance_id)
+    click.echo(f"commits to be promoted: {diff_commits}")
+
+    for commit in diff_commits:
+        promote_commit(ctx, commit[0], f"Promoted from instance with id: {source_instance_id}", None, target_instance_id)
 
 
 @promotions.command()
@@ -124,8 +133,6 @@ def all_promotions_from_instance(ctx, instance_id, states):
     current_page = 0
     source_promotions = []
     while pages == None or current_page < pages:
-        click.echo(f"pages: {pages}")
-        click.echo(f"current_page: {current_page}")
         source_response = list_promotions(ctx, None, instance_id, states, None, None, None, None, None, None, 1000, current_page)
         if source_response.status_code == 200:
             promotions = json.loads(source_response.text)

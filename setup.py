@@ -1,16 +1,16 @@
 from setuptools import setup
 
 setup(
-    name='ext',
+    name='ade_ext',
     version='0.1.0',
-    py_modules=['ext'],
+    py_modules=['ade_ext'],
     install_requires=[
         'Click ==8.0.1',
         'requests'
     ],
     entry_points={
         'console_scripts': [
-            'ext = ext:ext',
+            'ade = ade_ext:ade',
         ],
     },
 )
