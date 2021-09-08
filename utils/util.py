@@ -11,8 +11,12 @@ def handleResponse(content, file_write):
     else: 
         click.echo(prettyJson(content))
 
-def prettyJson(text):
-    return json.dumps(json.loads(text), indent=4)
+def prettyJson(content):
+    try:
+        json_object = json.loads(content)
+    except:
+        json_object = content
+    return json.dumps(json_object, indent=4)
 
 
 class UUIDEncoder(json.JSONEncoder):

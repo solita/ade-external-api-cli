@@ -1,5 +1,11 @@
 import click
+import json
+import time
+
+from click.utils import echo
+from commands import deployments
 from utils import util
+
 
 @click.group()
 @click.pass_context
@@ -48,5 +54,25 @@ def deploy(ctx, environment_name, instance_id):
     s = ctx.obj['SESSION']
     request_url = f"{ctx.obj['BASE_URL']}/{environment_name}/instances/{instance_id}/deployments"
     response = s.post(request_url)
-    util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
+
+    deployment = json.loads(response.text)
+    phases = json.loads(deployments.get_phases(ctx, deployment["id"]).text)
+
+    progress = 0
+    with click.progressbar(length=len(phases), label='Deployment progress') as bar:
+        while deployment["state"] in ["WAITING", "RUNNING"]:
+            time.sleep(2)
+            deployment = json.loads(deployments.get_deployment(ctx, deployment["id"]).text)
+            phases = json.loads(deployments.get_phases(ctx, deployment["id"]).text)
+            successes = 0
+            for phase in phases:
+                if phase["state"] not in ["WAITING", "RUNNING"]:
+                    successes += 1
+            bar.update(successes - progress)
+            progress = successes
+
+    deployments.log_phases(phases)
+    util.handleResponse(deployment, ctx.obj['FILE_WRITE'])
     return response
+
+

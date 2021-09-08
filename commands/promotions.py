@@ -89,10 +89,10 @@ def promote_env(ctx, source_instance_id, target_instance_id, all):
                 filtered_commits.append(commit)
         diff_commits = filtered_commits
 
-    click.echo(f"commits to be promoted: {diff_commits}")
 
-    for commit in diff_commits:
-        promote_commit(ctx, commit[0], f"Promoted from instance with id: {source_instance_id}", None, target_instance_id)
+    with click.progressbar(diff_commits, label='Promoting commits') as bar:
+        for commit in bar:
+            promote_commit(ctx, commit[0], f"Promoted from instance with id: {source_instance_id}", None, target_instance_id)
 
 
 @promotions.command()
@@ -102,8 +102,9 @@ def demote_promoted(ctx, instance_id):
     promotions = all_promotions_from_instance(ctx, instance_id, ['PROMOTED'])
     promotion_ids = [promotion["promotionId"] for promotion in promotions]
 
-    for promotion_id in promotion_ids:
-        demote_promotion(ctx, promotion_id)
+    with click.progressbar(promotion_ids, label='Demoting promotions') as bar:
+        for promotion_id in bar:
+            demote_promotion(ctx, promotion_id)
 
 
 
