@@ -35,6 +35,7 @@ def ade(ctx, tenant, installation, environment, apikey_id, apikey_secret, base_u
 
     ctx.obj['FILE_WRITE'] = file_write
 
+
 ade.add_command(code.code)
 ade.add_command(commits.commits)
 ade.add_command(deployments.deployments)

@@ -2,6 +2,7 @@ import json
 import click
 from utils import util
 
+
 @click.group()
 @click.pass_context
 def promotions(ctx):
@@ -107,7 +108,6 @@ def demote_promoted(ctx, instance_id):
             demote_promotion(ctx, promotion_id)
 
 
-
 def list_promotions(ctx, environment_name, instance_id, state, commit_id, package_id, created_from, created_to, updated_from, updated_to, size, page):
     s = ctx.obj['SESSION']
 
@@ -129,11 +129,12 @@ def list_promotions(ctx, environment_name, instance_id, state, commit_id, packag
 
     return s.get(request_url)
 
+
 def all_promotions_from_instance(ctx, instance_id, states):
     pages = None
     current_page = 0
     source_promotions = []
-    while pages == None or current_page < pages:
+    while pages is None or current_page < pages:
         source_response = list_promotions(ctx, None, instance_id, states, None, None, None, None, None, None, 1000, current_page)
         if source_response.status_code == 200:
             promotions = json.loads(source_response.text)

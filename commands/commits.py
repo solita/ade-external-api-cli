@@ -1,6 +1,7 @@
 import click
 from utils import util
 
+
 @click.group()
 @click.pass_context
 def commits(ctx):

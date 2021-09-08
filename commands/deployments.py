@@ -2,6 +2,7 @@ import click
 import json
 from utils import util
 
+
 @click.group()
 def deployments():
     pass
@@ -34,6 +35,7 @@ def phases(ctx, id):
     elif response.text != None:
         click.echo(f"{util.prettyJson(response.text)}", err=True)
     exit(1)
+
 
 def get_deployment(ctx, id):
     s = ctx.obj['SESSION']
