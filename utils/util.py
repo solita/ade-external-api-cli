@@ -1,22 +1,21 @@
 import json
 import click
+import os
 from uuid import UUID
 
-def handleResponse(content, file_write):
-    if file_write: 
-        f = open(f"responses/{file_write}", "w")
-        click.echo(prettyJson(content), file=f)
-        click.echo(f"Response written to file: {f.name}")
-        f.close()
-    else: 
-        click.echo(prettyJson(content))
+def write_to_file(dir, file_name, content):
+    if dir: path =f"responses/{dir}"
+    else: path = "responses"
 
-def prettyJson(content):
-    try:
-        json_object = json.loads(content)
-    except:
-        json_object = content
-    return json.dumps(json_object, indent=4)
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    with open(f"{path}/{file_name}", "w") as file:
+        click.echo(pretty_json(content), file=file)
+
+
+def pretty_json(content):
+    return json.dumps(content, indent=4)
 
 
 class UUIDEncoder(json.JSONEncoder):

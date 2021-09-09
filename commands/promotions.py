@@ -4,9 +4,8 @@ from utils import util
 
 
 @click.group()
-@click.pass_context
-def promotions(ctx):
-    ctx.obj['BASE_URL'] = f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/promotions"
+def promotions():
+    pass
 
 
 @promotions.command()
@@ -14,7 +13,7 @@ def promotions(ctx):
 @click.option('--environment-name')
 @click.option('--instance-id', type=click.UUID)
 @click.option('--state', type=click.Choice(['DEMOTED', 'DEPLOYED', 'DEPLOYING', 'HISTORIZED', 'PROMOTED', 'WAITING']), multiple=True)
-@click.option('--commit-id', type=click.UUID)
+@click.option('--commit-id')
 @click.option('--package-id', type=click.UUID)
 @click.option('--created-from')
 @click.option('--created-to')
@@ -24,22 +23,21 @@ def promotions(ctx):
 @click.option('--page', type=int)
 def list(ctx, environment_name, instance_id, state, commit_id, package_id, created_from, created_to, updated_from, updated_to, size, page):
     response = list_promotions(ctx, environment_name, instance_id, state, commit_id, package_id, created_from, created_to, updated_from, updated_to, size, page)
-    if response.status_code == 200:
-        util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
-        return response
-    elif response.text != None:
-        click.echo(f"{util.prettyJson(response.text)}", err=True)
-    exit(1)
+    if ctx.obj['OUT']:
+        util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
+    else:
+        click.echo(util.pretty_json(response))
             
 
 @promotions.command()
 @click.pass_context
 @click.option('--id', required=True, type=click.UUID)
 def get(ctx, id):
-    s = ctx.obj['SESSION']
-    response = s.get(f"{ctx.obj['BASE_URL']}/{id}")
-    util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
-    return response
+    response = get_promotion(ctx, id)
+    if ctx.obj['OUT']:
+        util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
+    else:
+        click.echo(util.pretty_json(response))
 
 
 @promotions.command()
@@ -50,26 +48,21 @@ def get(ctx, id):
 @click.option('--instance-id', type=click.UUID)
 def promote(ctx, commit_id, description, environment_name, instance_id):
     response = promote_commit(ctx, commit_id, description, environment_name, instance_id)
-    if response.status_code == 200 or response.status_code == 201:
-        util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
-        return response
-    elif response.text != None:
-        click.echo(f"{util.prettyJson(response.text)}", err=True)
-    exit(1)
+    if ctx.obj['OUT']:
+        util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
+    else:
+        click.echo(util.pretty_json(response))
 
 
 @promotions.command()
 @click.pass_context
 @click.option('--id', required=True, type=click.UUID)
 def demote(ctx, id):
-    demote_promotion
     response = demote_promotion(ctx, id)
-    if response.status_code == 200:
-        util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
-        return response
-    elif response.text != None:
-        click.echo(f"{util.prettyJson(response.text)}", err=True)
-    exit(1)
+    if ctx.obj['OUT']:
+        util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
+    else:
+        click.echo(util.pretty_json(response))
 
 
 @promotions.command()
@@ -127,29 +120,24 @@ def list_promotions(ctx, environment_name, instance_id, state, commit_id, packag
     request_url = f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/promotions"
     if len(params) != 0: request_url = f"{request_url}?" + "&".join(params)
 
-    return s.get(request_url)
+    response = s.get(request_url)
+    content = json.loads(response.text) if response.text else ""
+
+    if response.status_code != 200:
+        click.echo(f"Unable to list promotions with given parameters. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    return content
 
 
-def all_promotions_from_instance(ctx, instance_id, states):
-    pages = None
-    current_page = 0
-    source_promotions = []
-    while pages is None or current_page < pages:
-        source_response = list_promotions(ctx, None, instance_id, states, None, None, None, None, None, None, 1000, current_page)
-        if source_response.status_code == 200:
-            promotions = json.loads(source_response.text)
-            source_promotions.extend(promotions['content'])
-            pages = promotions['totalPages']
-            current_page = promotions['pageNumber'] + 1
-        else:
-            exit(1)
-    return source_promotions
-
-
-def demote_promotion(ctx, id):
+def get_promotion(ctx, id):
     s = ctx.obj['SESSION']
-    response = s.delete(f"{ctx.obj['BASE_URL']}/{id}")
-    return response
+    response = s.get(f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/promotions/{id}")
+    content = json.loads(response.text) if response.text else ""
+
+    if response.status_code != 200:
+        click.echo(f"Unable to get promotion with id {id}. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    return content
 
 
 def promote_commit(ctx, commit_id, description, environment_name, instance_id):
@@ -161,5 +149,34 @@ def promote_commit(ctx, commit_id, description, environment_name, instance_id):
     if environment_name: body['environmentName'] = environment_name
     if instance_id: body['environmentTargetInstanceId'] = instance_id
 
-    response = s.post(ctx.obj['BASE_URL'], data=json.dumps(body, cls=util.UUIDEncoder))
-    return response
+    response = s.post(f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/promotions", data=json.dumps(body, cls=util.UUIDEncoder))
+    content = json.loads(response.text) if response.text else ""
+
+    if response.status_code != 200:
+        click.echo(f"Unable to promote commit with id {commit_id}. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    return content
+
+
+def demote_promotion(ctx, id):
+    s = ctx.obj['SESSION']
+    response = s.delete(f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/promotions/{id}")
+    content = json.loads(response.text) if response.text else ""
+
+    if response.status_code != 200:
+        click.echo(f"Unable to demote promotion with id {id}. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    return content
+
+
+def all_promotions_from_instance(ctx, instance_id, states):
+    pages = None
+    current_page = 0
+    source_promotions = []
+    while pages is None or current_page < pages:
+        response = list_promotions(ctx, None, instance_id, states, None, None, None, None, None, None, 1000, current_page)
+        source_promotions.extend(response['content'])
+        pages = response['totalPages']
+        current_page = response['pageNumber'] + 1
+    return source_promotions
+

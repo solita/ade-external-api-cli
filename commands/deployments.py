@@ -13,12 +13,10 @@ def deployments():
 @click.option('--id', required=True, type=click.UUID)
 def get(ctx, id):
     response = get_deployment(ctx, id)
-    if response.status_code == 200:
-        util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
-        return response
-    elif response.text != None:
-        click.echo(f"{util.prettyJson(response.text)}", err=True)
-    exit(1)
+    if ctx.obj['OUT']:
+        util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
+    else:
+        click.echo(util.pretty_json(response))
 
 
 @deployments.command()
@@ -26,25 +24,30 @@ def get(ctx, id):
 @click.option('--id', required=True, type=click.UUID)
 def phases(ctx, id):
     response = get_phases(ctx, id)
-    if response.status_code == 200:
-        if (ctx.obj['FILE_WRITE'] != None):
-            util.handleResponse(response.text, ctx.obj['FILE_WRITE'])
-        else:
-            log_phases(json.loads(response.text))
-        return response
-    elif response.text != None:
-        click.echo(f"{util.prettyJson(response.text)}", err=True)
-    exit(1)
+    if ctx.obj['OUT']:
+        util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
+    else:
+        log_phases(response)
 
 
 def get_deployment(ctx, id):
     s = ctx.obj['SESSION']
-    return s.get(f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/deployments/{id}")
+    response = s.get(f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/deployments/{id}")
+    content = json.loads(response.text) if response.text else ""
+    if response.status_code != 200:
+        click.echo(f"Unable to fetch deployment with id {id}. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    return content
 
 
 def get_phases(ctx, id):
     s = ctx.obj['SESSION']
-    return s.get(f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/deployments/{id}/phases")
+    response = s.get(f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/deployments/{id}/phases")
+    content = json.loads(response.text) if response.text else ""
+    if response.status_code != 200:
+        click.echo(f"Unable to fetch deployment phases with id {id}. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    return content
 
 
 def log_phases(phases):

@@ -1,4 +1,4 @@
 __pycache__/
 *.egg-info/
-responses/*
+responses/
 ade-community-example-external-api.iml

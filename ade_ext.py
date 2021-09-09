@@ -16,15 +16,16 @@ from commands import code
 @click.option('--apikey-secret', envvar='ADE_API_KEY_SECRET', required=True)
 @click.option('--base-url', envvar='ADE_EXTERNAL_API_BASE_URL', default='https://external.services.saasdev.agiledataengine.com')
 @click.option('--debug', is_flag=True, default=False)
-@click.option('--file-write')
+@click.option('--out')
+@click.option('--dir')
 @click.pass_context
-def ade(ctx, tenant, installation, environment, apikey_id, apikey_secret, base_url, debug, file_write):
+def ade(ctx, tenant, installation, environment, apikey_id, apikey_secret, base_url, debug, out, dir):
     if debug:
         http.client.HTTPConnection.debuglevel = 1
 
     s = requests.Session()
     s.headers.update({"X-API-KEY-ID": apikey_id, "X-API-KEY-SECRET": apikey_secret, "Content-Type": "application/json"})
-    
+
     ctx.ensure_object(dict)
     ctx.obj['DEBUG'] = debug
     ctx.obj['SESSION'] = s
@@ -33,7 +34,9 @@ def ade(ctx, tenant, installation, environment, apikey_id, apikey_secret, base_u
     ctx.obj['TENANT'] = tenant
     ctx.obj['INSTALLATION'] = installation
 
-    ctx.obj['FILE_WRITE'] = file_write
+    ctx.obj['FILE_WRITE'] = out
+    ctx.obj['OUT'] = out
+    ctx.obj['DIR'] = dir
 
 
 ade.add_command(code.code)
