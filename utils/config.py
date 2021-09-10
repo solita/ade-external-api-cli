@@ -1,1 +1,0 @@
-external_api_base_url="https://external.services.saasdev.agiledataengine.com"
