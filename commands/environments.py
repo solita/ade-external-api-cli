@@ -8,6 +8,9 @@ from utils import util
 
 @click.group()
 def environments():
+    """
+    Functionality related to environments.
+    """
     pass
 
 
@@ -15,6 +18,9 @@ def environments():
 @click.pass_context
 @click.option('--environment-name', required=True)
 def get(ctx, environment_name):
+    """
+    Gets information about an environment
+    """
     response = get_environment(ctx, environment_name)
     if ctx.obj['OUT']:
         util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
@@ -26,6 +32,9 @@ def get(ctx, environment_name):
 @click.pass_context
 @click.option('--environment-name', required=True)
 def instances(ctx, environment_name):
+    """
+    Gets all target instances of an environment
+    """
     response = list_instances(ctx, environment_name)
     if ctx.obj['OUT']:
         util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
@@ -38,6 +47,9 @@ def instances(ctx, environment_name):
 @click.option('--environment-name', required=True)
 @click.option('--instance-id', required=True, type=click.UUID)
 def instance(ctx, environment_name, instance_id):
+    """
+    Gets information about a target instance
+    """
     response = get_instance(ctx, environment_name, instance_id)
     if ctx.obj['OUT']:
         util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
@@ -50,6 +62,9 @@ def instance(ctx, environment_name, instance_id):
 @click.option('--environment-name', required=True)
 @click.option('--instance-id', required=True, type=click.UUID)
 def deploy(ctx, environment_name, instance_id):
+    """
+    Deploys all promoted packages in a target instance
+    """
     deployment = deploy_promotions(ctx, environment_name, instance_id)
     phases = deployments.get_phases(ctx, deployment["id"])
 

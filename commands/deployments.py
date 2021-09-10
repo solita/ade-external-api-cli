@@ -5,6 +5,9 @@ from utils import util
 
 @click.group()
 def deployments():
+    """
+    Functionality related to deployments.
+    """
     pass
 
 
@@ -12,6 +15,9 @@ def deployments():
 @click.pass_context
 @click.option('--id', required=True, type=click.UUID)
 def get(ctx, id):
+    """
+    Gets information about a deployment
+    """
     response = get_deployment(ctx, id)
     if ctx.obj['OUT']:
         util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
@@ -23,6 +29,9 @@ def get(ctx, id):
 @click.pass_context
 @click.option('--id', required=True, type=click.UUID)
 def phases(ctx, id):
+    """
+    Gets information about phases of a deployment
+    """
     response = get_phases(ctx, id)
     if ctx.obj['OUT']:
         util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)

@@ -7,6 +7,9 @@ from utils import util
 
 @click.group()
 def code():
+    """
+    Functionality related to coded logic.
+    """
     pass
 
 
@@ -15,8 +18,12 @@ def code():
 @click.option('--environment-name', required=True)
 @click.option('--instance-name', required=True)
 @click.option('--package-id', required=True, type=click.UUID)
-@click.option('--entity-id', type=click.UUID)
+@click.option('--entity-id', type=click.UUID, help="Entity ID used to limit loads to certain entity")
 def loads(ctx, environment_name, instance_name, package_id, entity_id):
+    """
+    Gets DvLoads for certain package
+    """
+
     s = ctx.obj['SESSION']
 
     environment = util.get_environment_config_from_context(
@@ -37,6 +44,9 @@ def loads(ctx, environment_name, instance_name, package_id, entity_id):
 @click.option('--environment-name', required=True)
 @click.option('--instance-id', required=True, type=click.UUID)
 def all_loads(ctx, environment_name, instance_id):
+    """
+    Gets DvLoads for all packages in certain target instance
+    """
     instance = environments.get_instance(ctx, environment_name, instance_id)
     packages = [(promotion["packageId"], promotion["packageName"])
                 for promotion in promotions.all_promotions_from_instance(ctx, instance_id, ["DEPLOYED"])]

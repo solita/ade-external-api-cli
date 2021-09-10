@@ -5,6 +5,9 @@ from utils import util
 
 @click.group()
 def commits():
+    """
+    Functionality related to commits.
+    """
     pass
 
 
@@ -12,6 +15,9 @@ def commits():
 @click.pass_context
 @click.option('--id', required=True, type=int)
 def get(ctx, id):
+    """
+    Gets information about a commit
+    """
     response = get_commit(ctx, id)
     if ctx.obj['OUT']:
         util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
@@ -23,6 +29,9 @@ def get(ctx, id):
 @click.pass_context
 @click.option('--id', required=True, type=int)
 def content(ctx, id):
+    """
+    Gets full content of a commit
+    """
     response = get_content(ctx, id)
     if ctx.obj['OUT']:
         util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)

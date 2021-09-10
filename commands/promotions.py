@@ -5,6 +5,9 @@ from utils import util
 
 @click.group()
 def promotions():
+    """
+    Functionality related to promotions.
+    """
     pass
 
 
@@ -22,6 +25,9 @@ def promotions():
 @click.option('--size', type=int)
 @click.option('--page', type=int)
 def list(ctx, environment_name, instance_id, state, commit_id, package_id, created_from, created_to, updated_from, updated_to, size, page):
+    """
+    Gets all promotions with given filters
+    """
     response = list_promotions(ctx, environment_name, instance_id, state, commit_id,
                                package_id, created_from, created_to, updated_from, updated_to, size, page)
     if ctx.obj['OUT']:
@@ -34,6 +40,9 @@ def list(ctx, environment_name, instance_id, state, commit_id, package_id, creat
 @click.pass_context
 @click.option('--id', required=True, type=click.UUID)
 def get(ctx, id):
+    """
+    Gets information about a promotion
+    """
     response = get_promotion(ctx, id)
     if ctx.obj['OUT']:
         util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
@@ -48,6 +57,9 @@ def get(ctx, id):
 @click.option('--environment-name')
 @click.option('--instance-id', type=click.UUID)
 def promote(ctx, commit_id, description, environment_name, instance_id):
+    """
+    Promotes a commit to certain target instance
+    """
     response = promote_commit(
         ctx, commit_id, description, environment_name, instance_id)
     if ctx.obj['OUT']:
@@ -60,6 +72,9 @@ def promote(ctx, commit_id, description, environment_name, instance_id):
 @click.pass_context
 @click.option('--id', required=True, type=click.UUID)
 def demote(ctx, id):
+    """
+    Demotes a promotion
+    """
     response = demote_promotion(ctx, id)
     if ctx.obj['OUT']:
         util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
@@ -71,8 +86,16 @@ def demote(ctx, id):
 @click.pass_context
 @click.option('--source-instance-id', required=True, type=click.UUID)
 @click.option('--target-instance-id', required=True, type=click.UUID)
-@click.option('--all', is_flag=True, default=False)
+@click.option('--all', is_flag=True, default=False, help='Enables promoting all deployed promotions from source environment')
 def promote_env(ctx, source_instance_id, target_instance_id, all):
+    """
+    Promotes deployed promotions from one instance to another
+
+    By default promotes only those packages which have been promoted 
+    to the targeted instance. All packages can be forced to get promoted
+    using --all flag
+
+    """
     source_promotions = all_promotions_from_instance(
         ctx, source_instance_id, ['DEPLOYED'])
     target_promotions = all_promotions_from_instance(
@@ -100,6 +123,9 @@ def promote_env(ctx, source_instance_id, target_instance_id, all):
 @click.pass_context
 @click.option('--instance-id', required=True, type=click.UUID)
 def demote_promoted(ctx, instance_id):
+    """
+    Demotes all promoted promotions in a target instance
+    """
     promotions = all_promotions_from_instance(ctx, instance_id, ['PROMOTED'])
     promotion_ids = [promotion["promotionId"] for promotion in promotions]
 
