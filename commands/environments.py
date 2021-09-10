@@ -65,7 +65,7 @@ def deploy(ctx, environment_name, instance_id):
                     successes += 1
             bar.update(successes - progress)
             progress = successes
-    
+
     deployments.log_phases(phases)
 
     if ctx.obj['OUT']:
@@ -76,39 +76,63 @@ def deploy(ctx, environment_name, instance_id):
 
 def get_environment(ctx, environment_name):
     s = ctx.obj['SESSION']
-    response = s.get(f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/environments/{environment_name}")
+    response = s.get(
+        f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/environments/{environment_name}")
     content = json.loads(response.text) if response.text else ""
     if response.status_code != 200:
-        click.echo(f"Unable to fetch environment with name {environment_name}. Response code {response.status_code}: \n{content}", err=True)
+        click.echo(
+            f"Unable to fetch environment with name {environment_name}. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    elif response.status_code != 401:
+        click.echo(
+            f"\nUnauthorized. Response code {response.status_code}", err=True)
         exit(1)
     return content
 
 
 def list_instances(ctx, environment_name):
     s = ctx.obj['SESSION']
-    response = s.get(f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/environments/{environment_name}/instances")
+    response = s.get(
+        f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/environments/{environment_name}/instances")
     content = json.loads(response.text) if response.text else ""
     if response.status_code != 200:
-        click.echo(f"Unable to fetch instances with environment name {environment_name}. Response code {response.status_code}: \n{content}", err=True)
+        click.echo(
+            f"Unable to fetch instances with environment name {environment_name}. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    elif response.status_code != 401:
+        click.echo(
+            f"\nUnauthorized. Response code {response.status_code}", err=True)
         exit(1)
     return content
 
 
 def get_instance(ctx, environment_name, instance_id):
     s = ctx.obj['SESSION']
-    response = s.get(f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/environments/{environment_name}/instances/{instance_id}")
+    response = s.get(
+        f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/environments/{environment_name}/instances/{instance_id}")
     content = json.loads(response.text) if response.text else ""
     if response.status_code != 200:
-        click.echo(f"Unable to fetch instance with environment name {environment_name} and instance id {instance_id}. Response code {response.status_code}: \n{content}", err=True)
+        click.echo(
+            f"Unable to fetch instance with environment name {environment_name} and instance id {instance_id}. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    elif response.status_code != 401:
+        click.echo(
+            f"\nUnauthorized. Response code {response.status_code}", err=True)
         exit(1)
     return content
 
 
 def deploy_promotions(ctx, environment_name, instance_id):
     s = ctx.obj['SESSION']
-    response = s.post(f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/environments/{environment_name}/instances/{instance_id}/deployments")
+    response = s.post(
+        f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/environments/{environment_name}/instances/{instance_id}/deployments")
     content = json.loads(response.text) if response.text else ""
     if response.status_code != 200:
-        click.echo(f"Unable to initialize deployment with environment name {environment_name} and instance id {instance_id}. Response code {response.status_code}: \n{content}", err=True)
+        click.echo(
+            f"Unable to initialize deployment with environment name {environment_name} and instance id {instance_id}. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    elif response.status_code != 401:
+        click.echo(
+            f"\nUnauthorized. Response code {response.status_code}", err=True)
         exit(1)
     return content

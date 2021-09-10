@@ -19,8 +19,9 @@ def code():
 def loads(ctx, environment_name, instance_name, package_id, entity_id):
     s = ctx.obj['SESSION']
 
-    environment = util.get_environment_config_from_context(ctx, environment_name)
-        
+    environment = util.get_environment_config_from_context(
+        ctx, environment_name)
+
     s = util.create_session(environment)
     request_url = f"{ctx.obj['EXTERNAL_API_BASE_URL']}/external-api/api/{ctx.obj['TENANT']}/{ctx.obj['INSTALLATION']}/{environment_name.lower()}"
 
@@ -37,18 +38,22 @@ def loads(ctx, environment_name, instance_name, package_id, entity_id):
 @click.option('--instance-id', required=True, type=click.UUID)
 def all_loads(ctx, environment_name, instance_id):
     instance = environments.get_instance(ctx, environment_name, instance_id)
-    packages = [(promotion["packageId"], promotion["packageName"]) for promotion in promotions.all_promotions_from_instance(ctx, instance_id, ["DEPLOYED"])]
+    packages = [(promotion["packageId"], promotion["packageName"])
+                for promotion in promotions.all_promotions_from_instance(ctx, instance_id, ["DEPLOYED"])]
 
-    environment = util.get_environment_config_from_context(ctx, environment_name)
-        
+    environment = util.get_environment_config_from_context(
+        ctx, environment_name)
+
     s = util.create_session(environment)
     request_url = f"{ctx.obj['EXTERNAL_API_BASE_URL']}/external-api/api/{ctx.obj['TENANT']}/{ctx.obj['INSTALLATION']}/{environment_name.lower()}"
 
     with click.progressbar(packages, label='Generating loads') as bar:
         for package in bar:
-            response = get_loads(s, request_url, instance['instanceName'], package[0], None)
+            response = get_loads(
+                s, request_url, instance['instanceName'], package[0], None)
             if response:
-                util.write_to_file(ctx.obj['DIR'], f"{package[1]}.json", response)
+                util.write_to_file(
+                    ctx.obj['DIR'], f"{package[1]}.json", response)
 
 
 def get_loads(s, base_url, instance_name, package_id, entity_id):
@@ -58,6 +63,11 @@ def get_loads(s, base_url, instance_name, package_id, entity_id):
     response = s.get(url)
     content = json.loads(response.text)
     if response.status_code != 200:
-                click.echo(f"\nLoad generation failed. Response code {response.status_code}: \n{content}", err=True)
-                exit(1)
+        click.echo(
+            f"\nLoad generation failed. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    elif response.status_code != 401:
+        click.echo(
+            f"\nUnauthorized. Response code {response.status_code}", err=True)
+        exit(1)
     return content

@@ -32,20 +32,32 @@ def phases(ctx, id):
 
 def get_deployment(ctx, id):
     s = ctx.obj['SESSION']
-    response = s.get(f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/deployments/{id}")
+    response = s.get(
+        f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/deployments/{id}")
     content = json.loads(response.text) if response.text else ""
     if response.status_code != 200:
-        click.echo(f"Unable to fetch deployment with id {id}. Response code {response.status_code}: \n{content}", err=True)
+        click.echo(
+            f"Unable to fetch deployment with id {id}. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    elif response.status_code != 401:
+        click.echo(
+            f"\nUnauthorized. Response code {response.status_code}", err=True)
         exit(1)
     return content
 
 
 def get_phases(ctx, id):
     s = ctx.obj['SESSION']
-    response = s.get(f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/deployments/{id}/phases")
+    response = s.get(
+        f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/deployments/{id}/phases")
     content = json.loads(response.text) if response.text else ""
     if response.status_code != 200:
-        click.echo(f"Unable to fetch deployment phases with id {id}. Response code {response.status_code}: \n{content}", err=True)
+        click.echo(
+            f"Unable to fetch deployment phases with id {id}. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    elif response.status_code != 401:
+        click.echo(
+            f"\nUnauthorized. Response code {response.status_code}", err=True)
         exit(1)
     return content
 
@@ -53,8 +65,11 @@ def get_phases(ctx, id):
 def log_phases(phases):
     for phase in phases:
         if phase["state"] == "SUCCESS":
-            click.echo(f"{click.style(phase['packageName'], bold=True)} > {click.style(phase['state'], fg='green')}", err=True)
+            click.echo(
+                f"{click.style(phase['packageName'], bold=True)} > {click.style(phase['state'], fg='green')}", err=True)
         elif phase["state"] == "FAILED":
-            click.echo(f"{click.style(phase['packageName'], bold=True)} > {click.style(phase['state'], fg='red')}", err=True)
+            click.echo(
+                f"{click.style(phase['packageName'], bold=True)} > {click.style(phase['state'], fg='red')}", err=True)
         else:
-            click.echo(f"{click.style(phase['packageName'], bold=True)} > {phase['state']}", err=True)
+            click.echo(
+                f"{click.style(phase['packageName'], bold=True)} > {phase['state']}", err=True)
