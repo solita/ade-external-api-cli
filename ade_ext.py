@@ -14,7 +14,7 @@ from commands import code
 @click.group()
 @click.option('--tenant', envvar='ADE_TENANT', required=True, help="Tenant name used for calls")
 @click.option('--installation', envvar='ADE_INSTALLATION', required=True, help="Installation name used for calls")
-@click.option('--base-url', envvar='ADE_EXTERNAL_API_BASE_URL', default='https://external.services.saasdev.agiledataengine.com', help="Can be used to overwrite extenal api URL")
+@click.option('--base-url', envvar='ADE_EXTERNAL_API_BASE_URL', default='https://external.services.saas.agiledataengine.com', help="Can be used to overwrite extenal api URL")
 @click.option('--debug', is_flag=True, default=False, help="Enables debugging for http requests")
 @click.option('--out', help="Output file name where response is written")
 @click.option('--dir', help="Name of the folder where output is saved")
