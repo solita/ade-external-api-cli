@@ -6,15 +6,17 @@ from uuid import UUID
 
 
 def write_to_file(dir, file_name, content):
+    path = ""
     if dir:
-        path = f"responses/{dir}"
-    else:
-        path = "responses"
+        path = f"{dir}/"
 
     if not os.path.exists(path):
         os.makedirs(path)
 
-    with open(f"{path}/{file_name}", "w") as file:
+    
+    location = f"{path}{file_name}"
+
+    with open(location, "w") as file:
         click.echo(pretty_json(content), file=file)
 
 

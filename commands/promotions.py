@@ -122,7 +122,7 @@ def promote_env(ctx, source_instance_id, target_instance_id, all):
 @promotions.command()
 @click.pass_context
 @click.option('--instance-id', required=True, type=click.UUID)
-def demote_promoted(ctx, instance_id):
+def demote_all(ctx, instance_id):
     """
     Demotes all promoted promotions in a target instance
     """
@@ -168,13 +168,13 @@ def list_promotions(ctx, environment_name, instance_id, state, commit_id, packag
     response = s.get(request_url)
     content = json.loads(response.text) if response.text else ""
 
-    if response.status_code != 200:
-        click.echo(
-            f"Unable to list promotions with given parameters. Response code {response.status_code}: \n{content}", err=True)
-        exit(1)
-    elif response.status_code != 401:
+    if response.status_code == 401:
         click.echo(
             f"\nUnauthorized. Response code {response.status_code}", err=True)
+        exit(1)
+    elif response.status_code != 200:
+        click.echo(
+            f"Unable to list promotions with given parameters. Response code {response.status_code}: \n{content}", err=True)
         exit(1)
     return content
 
@@ -185,13 +185,13 @@ def get_promotion(ctx, id):
         f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/promotions/{id}")
     content = json.loads(response.text) if response.text else ""
 
-    if response.status_code != 200:
-        click.echo(
-            f"Unable to get promotion with id {id}. Response code {response.status_code}: \n{content}", err=True)
-        exit(1)
-    elif response.status_code != 401:
+    if response.status_code == 401:
         click.echo(
             f"\nUnauthorized. Response code {response.status_code}", err=True)
+        exit(1)
+    elif response.status_code != 200:
+        click.echo(
+            f"Unable to get promotion with id {id}. Response code {response.status_code}: \n{content}", err=True)
         exit(1)
     return content
 
@@ -213,13 +213,13 @@ def promote_commit(ctx, commit_id, description, environment_name, instance_id):
                       data=json.dumps(body, cls=util.UUIDEncoder))
     content = json.loads(response.text) if response.text else ""
 
-    if response.status_code != 200:
-        click.echo(
-            f"Unable to promote commit with id {commit_id}. Response code {response.status_code}: \n{content}", err=True)
-        exit(1)
-    elif response.status_code != 401:
+    if response.status_code == 401:
         click.echo(
             f"\nUnauthorized. Response code {response.status_code}", err=True)
+        exit(1)
+    elif response.status_code != 200:
+        click.echo(
+            f"Unable to promote commit with id {commit_id}. Response code {response.status_code}: \n{content}", err=True)
         exit(1)
     return content
 
@@ -230,13 +230,13 @@ def demote_promotion(ctx, id):
         f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/promotions/{id}")
     content = json.loads(response.text) if response.text else ""
 
-    if response.status_code != 200:
-        click.echo(
-            f"Unable to demote promotion with id {id}. Response code {response.status_code}: \n{content}", err=True)
-        exit(1)
-    elif response.status_code != 401:
+    if response.status_code == 401:
         click.echo(
             f"\nUnauthorized. Response code {response.status_code}", err=True)
+        exit(1)
+    elif response.status_code != 200:
+        click.echo(
+            f"Unable to demote promotion with id {id}. Response code {response.status_code}: \n{content}", err=True)
         exit(1)
     return content
 

@@ -44,13 +44,14 @@ def get_deployment(ctx, id):
     response = s.get(
         f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/deployments/{id}")
     content = json.loads(response.text) if response.text else ""
-    if response.status_code != 200:
-        click.echo(
-            f"Unable to fetch deployment with id {id}. Response code {response.status_code}: \n{content}", err=True)
-        exit(1)
-    elif response.status_code != 401:
+
+    if response.status_code == 401:
         click.echo(
             f"\nUnauthorized. Response code {response.status_code}", err=True)
+        exit(1)
+    elif response.status_code != 200:
+        click.echo(
+            f"Unable to fetch deployment with id {id}. Response code {response.status_code}: \n{content}", err=True)
         exit(1)
     return content
 
@@ -60,13 +61,13 @@ def get_phases(ctx, id):
     response = s.get(
         f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/deployments/{id}/phases")
     content = json.loads(response.text) if response.text else ""
-    if response.status_code != 200:
-        click.echo(
-            f"Unable to fetch deployment phases with id {id}. Response code {response.status_code}: \n{content}", err=True)
-        exit(1)
-    elif response.status_code != 401:
+    if response.status_code == 401:
         click.echo(
             f"\nUnauthorized. Response code {response.status_code}", err=True)
+        exit(1)
+    elif response.status_code != 200:
+        click.echo(
+            f"Unable to fetch deployment phases with id {id}. Response code {response.status_code}: \n{content}", err=True)
         exit(1)
     return content
 

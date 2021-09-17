@@ -24,8 +24,6 @@ def loads(ctx, environment_name, instance_name, package_id, entity_id):
     Gets DvLoads for certain package
     """
 
-    s = ctx.obj['SESSION']
-
     environment = util.get_environment_config_from_context(
         ctx, environment_name)
 
@@ -72,12 +70,12 @@ def get_loads(s, base_url, instance_name, package_id, entity_id):
         url = f"{url}?entityId={entity_id}"
     response = s.get(url)
     content = json.loads(response.text)
-    if response.status_code != 200:
-        click.echo(
-            f"\nLoad generation failed. Response code {response.status_code}: \n{content}", err=True)
-        exit(1)
-    elif response.status_code != 401:
+    if response.status_code == 401:
         click.echo(
             f"\nUnauthorized. Response code {response.status_code}", err=True)
+        exit(1)
+    elif response.status_code != 200:
+        click.echo(
+            f"\nLoad generation failed. Response code {response.status_code}: \n{content}", err=True)
         exit(1)
     return content

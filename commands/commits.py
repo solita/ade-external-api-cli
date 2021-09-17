@@ -45,13 +45,13 @@ def get_commit(ctx, id):
         f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/commits/{id}")
     content = json.loads(response.text) if response.text else ""
 
-    if response.status_code != 200:
-        click.echo(
-            f"Unable to fetch commit with id {id}. Response code {response.status_code}: \n{content}", err=True)
-        exit(1)
-    elif response.status_code != 401:
+    if response.status_code == 401:
         click.echo(
             f"\nUnauthorized. Response code {response.status_code}", err=True)
+        exit(1)
+    elif response.status_code != 200:
+        click.echo(
+            f"Unable to fetch commit with id {id}. Response code {response.status_code}: \n{content}", err=True)
         exit(1)
     return content
 
@@ -62,12 +62,12 @@ def get_content(ctx, id):
         f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/commits/{id}/content")
     content = json.loads(response.text) if response.text else ""
 
-    if response.status_code != 200:
-        click.echo(
-            f"Unable to fetch commit content with id {id}. Response code {response.status_code}: \n{content}", err=True)
-        exit(1)
-    elif response.status_code != 401:
+    if response.status_code == 401:
         click.echo(
             f"\nUnauthorized. Response code {response.status_code}", err=True)
+        exit(1)
+    elif response.status_code != 200:
+        click.echo(
+            f"Unable to fetch commit content with id {id}. Response code {response.status_code}: \n{content}", err=True)
         exit(1)
     return content

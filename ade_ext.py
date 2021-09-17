@@ -5,10 +5,12 @@ import json
 from utils import util
 from commands import config
 from commands import commits
+from commands import dagger
 from commands import deployments
 from commands import environments
 from commands import promotions
 from commands import code
+from commands import run_ids
 
 
 @click.group()
@@ -79,6 +81,8 @@ def ade(ctx, tenant, installation, base_url, debug, out, dir):
 ade.add_command(config.config)
 ade.add_command(code.code)
 ade.add_command(commits.commits)
+ade.add_command(dagger.dagger)
 ade.add_command(deployments.deployments)
 ade.add_command(environments.environments)
 ade.add_command(promotions.promotions)
+ade.add_command(run_ids.run_ids)
