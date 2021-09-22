@@ -13,6 +13,17 @@ def environments():
     """
     pass
 
+@environments.command()
+@click.pass_context
+def list(ctx):
+    """
+    Lists all environments
+    """
+    response = list_environments(ctx)
+    if ctx.obj['OUT']:
+        util.write_to_file(ctx.obj['DIR'], f"{ctx.obj['OUT']}", response)
+    else:
+        click.echo(util.pretty_json(response))
 
 @environments.command()
 @click.pass_context
@@ -101,6 +112,21 @@ def get_environment(ctx, environment_name):
     elif response.status_code != 200:
         click.echo(
             f"Unable to fetch environment with name {environment_name}. Response code {response.status_code}: \n{content}", err=True)
+        exit(1)
+    return content
+
+def list_environments(ctx):
+    s = ctx.obj['SESSION']
+    response = s.get(
+        f"{ctx.obj['EXTERNAL_API_URL']}/deployment/v1/environments")
+    content = json.loads(response.text) if response.text else ""
+    if response.status_code == 401:
+        click.echo(
+            f"\nUnauthorized. Response code {response.status_code}", err=True)
+        exit(1)
+    elif response.status_code != 200:
+        click.echo(
+            f"Unable to fetch environments. Response code {response.status_code}: \n{content}", err=True)
         exit(1)
     return content
 
