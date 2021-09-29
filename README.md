@@ -1,4 +1,4 @@
-# ade-community-example-external-api
+# ade-external-api-cli
 
 ## Installation
 
