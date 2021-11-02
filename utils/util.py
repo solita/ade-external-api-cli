@@ -7,10 +7,12 @@ from uuid import UUID
 
 def write_to_file(dir, file_name, content):
     path = ""
+
     if dir:
+        click.echo("asd")
         path = f"{dir}/"
 
-    if not os.path.exists(path):
+    if path != "" and not os.path.exists(path):
         os.makedirs(path)
 
     
