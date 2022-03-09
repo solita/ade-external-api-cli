@@ -42,6 +42,10 @@ def ade(ctx, tenant, installation, base_url, debug, out, dir):
 
     """
 
+    click.get_app_dir(app_name='ade', roaming=False, force_posix=True)
+    if not os.path.exists(click.get_app_dir(app_name='ade', roaming=False, force_posix=True)):
+        os.makedirs(click.get_app_dir(app_name='ade', roaming=False, force_posix=True))
+
     config_path = f"{click.get_app_dir(app_name='ade', roaming=False, force_posix=True)}/ade-ext-api-cli-config.json"
     ctx.ensure_object(dict)
     ctx.obj['CONFIG_PATH'] = config_path
