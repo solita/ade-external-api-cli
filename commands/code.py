@@ -45,6 +45,7 @@ def all_loads(ctx, environment_name, instance_id):
     """
     Gets DvLoads for all packages in certain target instance
     """
+
     instance = environments.get_instance(ctx, environment_name, instance_id)
     packages = [(promotion["packageId"], promotion["packageName"])
                 for promotion in promotions.all_promotions_from_instance(ctx, instance_id, ["DEPLOYED"])]
@@ -55,6 +56,7 @@ def all_loads(ctx, environment_name, instance_id):
     s = util.create_session(environment)
     request_url = f"{ctx.obj['EXTERNAL_API_BASE_URL']}/external-api/api/{ctx.obj['TENANT']}/{ctx.obj['INSTALLATION']}/{environment_name.lower()}"
 
+    click.echo(request_url)
     with click.progressbar(packages, label='Generating loads') as bar:
         for package in bar:
             response = get_loads(

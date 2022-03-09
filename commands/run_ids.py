@@ -123,7 +123,9 @@ def add_many(ctx, environment_name, body):
 @click.option('--target-entity-id')
 @click.option('--source-run-id', type=int)
 @click.option('--target-run-id', type=int)
-def delete(ctx, environment_name, load_id, source_entity_id, target_entity_id, source_run_id, target_run_id):
+@click.option('--from-run-timestamp', type=int)
+@click.option('--to-run-timestamp', type=int)
+def delete(ctx, environment_name, load_id, source_entity_id, target_entity_id, source_run_id, target_run_id, from_run_timestamp, to_run_timestamp):
     """
     Deletes run ids according to given search criteria.
     """
@@ -143,6 +145,10 @@ def delete(ctx, environment_name, load_id, source_entity_id, target_entity_id, s
         params.append(f"sourceRunId={source_run_id}")
     if target_run_id:
         params.append(f"targetRunId={target_run_id}")
+    if from_run_timestamp:
+        params.append(f"fromRunTimestamp={from_run_timestamp}")
+    if to_run_timestamp:
+        params.append(f"toRunTimestamp={to_run_timestamp}")
 
     delete_run_ids(s, base_url, params)
    

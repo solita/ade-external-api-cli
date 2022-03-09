@@ -12,6 +12,7 @@ from commands import packages
 from commands import promotions
 from commands import code
 from commands import run_ids
+from commands import load_status
 
 
 @click.group()
@@ -88,3 +89,4 @@ ade.add_command(environments.environments)
 ade.add_command(packages.packages)
 ade.add_command(promotions.promotions)
 ade.add_command(run_ids.run_ids)
+ade.add_command(load_status.load_status)
