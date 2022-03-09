@@ -16,8 +16,8 @@ from commands import load_status
 
 
 @click.group()
-@click.option('--tenant', envvar='ADE_TENANT', required=True, help="Tenant name used for calls")
-@click.option('--installation', envvar='ADE_INSTALLATION', required=True, help="Installation name used for calls")
+@click.option('--tenant', envvar='ADE_TENANT', help="Tenant name used for calls")
+@click.option('--installation', envvar='ADE_INSTALLATION', help="Installation name used for calls")
 @click.option('--base-url', envvar='ADE_EXTERNAL_API_BASE_URL', default='https://external.services.saas.agiledataengine.com', help="Can be used to overwrite extenal api URL")
 @click.option('--debug', is_flag=True, default=False, help="Enables debugging for http requests")
 @click.option('--out', help="Output file name where response is written")
@@ -52,6 +52,10 @@ def ade(ctx, tenant, installation, base_url, debug, out, dir):
         else:
             click.echo(
                 f"Configure credential using 'ade config' to before using the tool")
+            exit(1)
+
+        if tenant == None or installation == None:
+            click.echo(f"Error: Missing parameters --tenant or --installation")
             exit(1)
 
         environment = {}
