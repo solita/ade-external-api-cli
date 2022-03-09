@@ -41,6 +41,7 @@ def delete(ctx, environment_name, load_id):
     base_url = f"{ctx.obj['EXTERNAL_API_BASE_URL']}/external-api/api/{ctx.obj['TENANT']}/{ctx.obj['INSTALLATION']}/{environment_name.lower()}"
 
     delete_load_status(s, base_url, load_id)
+    click.echo(f"OK", err=True)
 
 
 def get_load_status(s, base_url, load_id):
