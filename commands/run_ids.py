@@ -150,7 +150,8 @@ def delete(ctx, environment_name, load_id, source_entity_id, target_entity_id, s
     if to_run_timestamp:
         params.append(f"toRunTimestamp={to_run_timestamp}")
 
-    delete_run_ids(s, base_url, params)
+    response = delete_run_ids(s, base_url, params)
+    click.echo(f"Request finished with status code {response}")
    
 
 def search_run_ids(s, base_url, params):
@@ -203,3 +204,5 @@ def delete_run_ids(s, base_url, params):
         click.echo(
             f"Unable to delete run ids with given parameters. Response code {response.status_code}: \n{content}", err=True)
         exit(1)
+
+    return response.status_code

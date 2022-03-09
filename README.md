@@ -15,14 +15,3 @@ The tool requires at least a design environment to be configured. Some commands 
 ## Usage
 
 To get more information about all the commands available, use ```--help``` parameter with all commands and subcommands. It will give more information about the command and display all available parameters and subcommands.
-
-
-## Troubleshooting
-
-if you get this error
-
-```ModuleNotFoundError: No module named 'utils'```
-
-install the tool using
-
-```pip install --editable .```
