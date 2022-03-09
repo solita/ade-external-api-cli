@@ -42,7 +42,6 @@ def ade(ctx, tenant, installation, base_url, debug, out, dir):
 
     """
 
-    click.get_app_dir(app_name='ade', roaming=False, force_posix=True)
     if not os.path.exists(click.get_app_dir(app_name='ade', roaming=False, force_posix=True)):
         os.makedirs(click.get_app_dir(app_name='ade', roaming=False, force_posix=True))
 

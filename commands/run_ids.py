@@ -120,7 +120,7 @@ def add_many(ctx, environment_name, body):
 @click.option('--environment-name', required=True)
 @click.option('--load-id')
 @click.option('--source-entity-id')
-@click.option('--target-entity-id')
+@click.option('--target-entity-id', required=True)
 @click.option('--source-run-id', type=int)
 @click.option('--target-run-id', type=int)
 @click.option('--from-run-timestamp', type=int)
