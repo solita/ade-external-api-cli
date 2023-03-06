@@ -5,7 +5,6 @@ from utils.versioned_command import VersionedCommand
 from utils import util
 
 
-
 @click.group(cls=VersionedGroup)
 @click.option('--version', '-v', type=int, required=False, default=1, help='API version number')
 def dagger(version):
@@ -66,7 +65,7 @@ def start_v1(ctx, environment_name, dag_id):
         click.echo(util.pretty_json(response))
 
 
-@dagger.command(group='V2', cls=VersionedCommand)
+@dagger.command(group='V2 (preview)', cls=VersionedCommand)
 @click.pass_context
 @click.option('--environment-name', required=True)
 @click.option('--dag-id', required=True, help='Dag name')
@@ -91,7 +90,7 @@ def get_v2(ctx, environment_name, dag_id, dag_run_id):
     else:
         click.echo(util.pretty_json(response))
 
-@dagger.command(group='V2', cls=VersionedCommand)
+@dagger.command(group='V2 (preview)', cls=VersionedCommand)
 @click.pass_context
 @click.option('--environment-name', required=True)
 @click.option('--dag-id', required=True, help='Dag name')
@@ -127,7 +126,7 @@ def find_v2(ctx, environment_name, dag_id, state, logical_date_from, logical_dat
     else:
         click.echo(util.pretty_json(response))
 
-@dagger.command(group='V2', cls=VersionedCommand)
+@dagger.command(group='V2 (preview)', cls=VersionedCommand)
 @click.pass_context
 @click.option('--environment-name', required=True)
 @click.option('--dag-id', required=True, help='Dag name')

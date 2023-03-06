@@ -56,7 +56,8 @@ class VersionedGroup(click.Group):
 
             with formatter.section('Commands'):
                 for group_name, rows in sorted(groups.items()):
-                    if group_name.endswith(str(default_version)):
+                    regexp = re.compile(f'.*V{default_version}.*')
+                    if regexp.search(group_name):
                         group_name += " (default)"
                     with formatter.section(group_name):
                         formatter.write_dl(rows)
