@@ -6,7 +6,7 @@ from utils import util
 
 
 @click.group(cls=VersionedGroup)
-@click.option('--version', '-v', type=int, required=False, default=1, help='API version number')
+@click.option('--version', '-v', type=int, required=False, default=2, help='API version number')
 def dagger(version):
     """
     Functionality related to dagger.
