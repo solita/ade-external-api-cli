@@ -1,5 +1,7 @@
 # ade-external-api-cli
 
+## Repository moved to https://github.com/agile-data-engine/ade-external-api-cli
+
 ## Installation
 
 Install tool using the following command
